@@ -1306,6 +1306,11 @@ static ZEND_COLD void zend_error_va_list(
 		}
 	}
 
+	if((EG(current_execute_data)->func->common.fn_flags & ZEND_ACC_STRICT_ERRORS) != 0) {
+		zend_throw_exception_ex(zend_ce_error_exception, 0, "An error has occured");
+		return;
+	}
+
 #ifdef HAVE_DTRACE
 	if (DTRACE_ERROR_ENABLED()) {
 		char *dtrace_error_buffer;
