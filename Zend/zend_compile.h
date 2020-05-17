@@ -334,8 +334,8 @@ typedef struct _zend_oparray_context {
 /* op_array uses strict mode types                        |     |     |     */
 #define ZEND_ACC_STRICT_TYPES            (1U << 31) /*    |  X  |     |     */
 /*                                                        |     |     |     */
-/* op_array uses strict mode errors                       |     |     |     */
-#define ZEND_ACC_STRICT_ERRORS           (1U << 23) /*    |  X  |     |     */
+/* op_array uses ErrorException                           |     |     |     */
+#define ZEND_ACC_ERROR_EXCEPTION         (1U << 17) /*    |  X  |     |     */
 
 
 #define ZEND_ACC_PPP_MASK  (ZEND_ACC_PUBLIC | ZEND_ACC_PROTECTED | ZEND_ACC_PRIVATE)
