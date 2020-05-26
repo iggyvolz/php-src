@@ -333,9 +333,6 @@ typedef struct _zend_oparray_context {
 /*                                                        |     |     |     */
 /* op_array uses strict mode types                        |     |     |     */
 #define ZEND_ACC_STRICT_TYPES            (1U << 31) /*    |  X  |     |     */
-/*                                                        |     |     |     */
-/* op_array uses ErrorException                           |     |     |     */
-#define ZEND_ACC_ERROR_EXCEPTION         (1U << 17) /*    |  X  |     |     */
 
 
 #define ZEND_ACC_PPP_MASK  (ZEND_ACC_PUBLIC | ZEND_ACC_PROTECTED | ZEND_ACC_PRIVATE)
@@ -433,6 +430,8 @@ struct _zend_op_array {
 
 	int last_literal;
 	zval *literals;
+
+	int error_exception;
 
 	void *reserved[ZEND_MAX_RESERVED_RESOURCES];
 };

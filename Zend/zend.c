@@ -1306,13 +1306,13 @@ static ZEND_COLD void zend_error_va_list(
 		}
 	}
 
-	if(EG(current_execute_data) && (EG(current_execute_data)->func->common.fn_flags & ZEND_ACC_ERROR_EXCEPTION) != 0) {
-		char *error_buffer;
-		zend_vspprintf(&error_buffer, 0, format, args);
-		zend_throw_exception_ex(zend_ce_error_exception, type, error_buffer);
-		efree(error_buffer);
-		return;
-	}
+       if(EG(current_execute_data) && (EG(current_execute_data)->func->op_array.error_exception & type) != 0) {
+                char *error_buffer;
+                zend_vspprintf(&error_buffer, 0, format, args);
+                zend_throw_exception_ex(zend_ce_error_exception, type, error_buffer);
+                efree(error_buffer);
+                return;
+        }
 
 #ifdef HAVE_DTRACE
 	if (DTRACE_ERROR_ENABLED()) {

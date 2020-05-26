@@ -5416,13 +5416,12 @@ void zend_compile_declare(zend_ast *ast) /* {{{ */
 		zend_ast *value_ast = declare_ast->child[1];
 		zend_string *name = zend_ast_get_str(name_ast);
 
-		if (value_ast->kind != ZEND_AST_ZVAL) {
-			zend_error_noreturn(E_COMPILE_ERROR, "declare(%s) value must be a literal", ZSTR_VAL(name));
-		}
-
 		if (zend_string_equals_literal_ci(name, "ticks")) {
 			zval value_zv;
 			zend_const_expr_to_zval(&value_zv, value_ast);
+			if (Z_TYPE(value_zv) != IS_LONG) {
+				zend_error_noreturn(E_COMPILE_ERROR, "ticks declaration must be an integer");
+			}
 			FC(declarables).ticks = zval_get_long(&value_zv);
 			zval_ptr_dtor_nogc(&value_zv);
 		} else if (zend_string_equals_literal_ci(name, "encoding")) {
@@ -5455,26 +5454,12 @@ void zend_compile_declare(zend_ast *ast) /* {{{ */
 			}
 		} else if (zend_string_equals_literal_ci(name, "error_exception")) {
 			zval value_zv;
-
-			if (FAILURE == zend_declare_is_first_statement(ast)) {
-				zend_error_noreturn(E_COMPILE_ERROR, "error_exception declaration must be "
-					"the very first statement in the script");
-			}
-
-			if (ast->child[1] != NULL) {
-				zend_error_noreturn(E_COMPILE_ERROR, "error_exception declaration must not "
-					"use block mode");
-			}
-
 			zend_const_expr_to_zval(&value_zv, value_ast);
-
-			if (Z_TYPE(value_zv) != IS_LONG || (Z_LVAL(value_zv) != 0 && Z_LVAL(value_zv) != 1)) {
-				zend_error_noreturn(E_COMPILE_ERROR, "error_exception declaration must have 0 or 1 as its value");
+			if (Z_TYPE(value_zv) != IS_LONG) {
+				zend_error_noreturn(E_COMPILE_ERROR, "error_exception declaration must be an integer");
 			}
-
-			if (Z_LVAL(value_zv) == 1) {
-				CG(active_op_array)->fn_flags |= ZEND_ACC_ERROR_EXCEPTION;
-			}
+			CG(active_op_array)->error_exception = zval_get_long(&value_zv);
+			zval_ptr_dtor_nogc(&value_zv);
 		} else {
 			zend_error(E_COMPILE_WARNING, "Unsupported declare '%s'", ZSTR_VAL(name));
 		}
