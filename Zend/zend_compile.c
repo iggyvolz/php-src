@@ -5420,7 +5420,7 @@ void zend_compile_declare(zend_ast *ast) /* {{{ */
 			zval value_zv;
 			zend_const_expr_to_zval(&value_zv, value_ast);
 			if (Z_TYPE(value_zv) != IS_LONG) {
-				zend_error_noreturn(E_COMPILE_ERROR, "ticks declaration must be an integer");
+				zend_error_noreturn(E_COMPILE_ERROR, "ticks value must be an integer");
 			}
 			FC(declarables).ticks = zval_get_long(&value_zv);
 			zval_ptr_dtor_nogc(&value_zv);
@@ -5453,10 +5453,19 @@ void zend_compile_declare(zend_ast *ast) /* {{{ */
 				CG(active_op_array)->fn_flags |= ZEND_ACC_STRICT_TYPES;
 			}
 		} else if (zend_string_equals_literal_ci(name, "error_exception")) {
+			if (FAILURE == zend_declare_is_first_statement(ast)) {
+				zend_error_noreturn(E_COMPILE_ERROR, "error_exception declaration must be "
+					"the very first statement in the script");
+			}
+
+			if (ast->child[1] != NULL) {
+				zend_error_noreturn(E_COMPILE_ERROR, "error_exception declaration must not "
+					"use block mode");
+			}
 			zval value_zv;
 			zend_const_expr_to_zval(&value_zv, value_ast);
 			if (Z_TYPE(value_zv) != IS_LONG) {
-				zend_error_noreturn(E_COMPILE_ERROR, "error_exception declaration must be an integer");
+				zend_error_noreturn(E_COMPILE_ERROR, "error_exception value must be an integer");
 			}
 			CG(active_op_array)->error_exception = zval_get_long(&value_zv);
 			zval_ptr_dtor_nogc(&value_zv);
